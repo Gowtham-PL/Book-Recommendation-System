@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Popular Books</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <a href="index.html"></a>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Roboto', sans-serif;
+      background: #f0f2f5;
+      color: #333;
+      overflow-x: hidden;
+      animation: fadeIn 1s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    header {
+      background: #1e3d59;
+      color: white;
+      padding: 1rem;
+      text-align: center;
+      font-size: 1.8rem;
+      font-weight: 700;
+    }
+
+    .container {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 20px;
+      padding: 2rem;
+    }
+
+    .book-card {
+      background: white;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      cursor: pointer;
+      transition: transform 0.3s ease;
+    }
+
+    .book-card:hover {
+      transform: scale(1.05);
+    }
+
+    .book-image {
+      width: 100%;
+      height: 280px;
+      object-fit: cover;
+    }
+
+    .book-title {
+      padding: 1rem;
+      font-weight: bold;
+      text-align: center;
+    }
+
+    .modal {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      visibility: hidden;
+      opacity: 0;
+      transition: all 0.3s ease-in-out;
+    }
+
+    .modal.active {
+      visibility: visible;
+      opacity: 1;
+    }
+
+    .modal-content {
+      background: white;
+      padding: 2rem;
+      border-radius: 10px;
+      max-width: 500px;
+      text-align: left;
+    }
+
+    .modal-content h3 {
+      margin-top: 0;
+    }
+
+    .close-btn {
+      float: right;
+      cursor: pointer;
+      font-size: 1.2rem;
+      color: #666;
+    }
+  </style>
+</head>
+<body>
+  <header>Thriller Books</header>
+  <div class="container" id="book-container"></div>
+
+  <div class="modal" id="book-modal">
+    <div class="modal-content">
+      <span class="close-btn" onclick="closeModal()">&times;</span>
+      <h3 id="modal-title"></h3>
+      <p><strong>Author:</strong> <span id="modal-author"></span></p>
+      <p><strong>Genre:</strong> <span id="modal-genre"></span></p>
+      <p><strong>Price:</strong> ₹<span id="modal-price"></span></p>
+      <p><strong>Rating:</strong> <span id="modal-rating"></span> ⭐</p>
+      <p id="modal-overview"></p>
+    </div>
+  </div>
+
+  <script>
+    const books = [
+    {
+  title: "The Girl with the Dragon Tattoo",
+  author: "Stieg Larsson",
+  genre: "Thriller",
+  price: 520,
+  rating: 4.5,
+  overview: "A journalist and a hacker uncover dark secrets in a wealthy family.",
+  image: "https://m.media-amazon.com/images/I/81WcnNQ-TBL.jpg"
+},
+{
+  title: "Gone Girl",
+  author: "Gillian Flynn",
+  genre: "Thriller",
+  price: 480,
+  rating: 4.6,
+  overview: "A husband's world turns upside down when his wife goes missing.",
+  image: "https://m.media-amazon.com/images/I/81AFocW+d4L.jpg"
+},
+{
+  title: "The Silent Patient",
+  author: "Alex Michaelides",
+  genre: "Thriller",
+  price: 470,
+  rating: 4.5,
+  overview: "A woman stops speaking after committing a shocking act of violence.",
+  image: "https://m.media-amazon.com/images/I/71Yyk4YgCNL.jpg"
+},
+{
+  title: "The Woman in the Window",
+  author: "A.J. Finn",
+  genre: "Thriller",
+  price: 450,
+  rating: 4.4,
+  overview: "A woman sees something she shouldn’t while spying on her neighbors.",
+  image: "https://m.media-amazon.com/images/I/81dQwQlmAXL.jpg"
+},
+{
+  title: "The Couple Next Door",
+  author: "Shari Lapena",
+  genre: "Thriller",
+  price: 460,
+  rating: 4.3,
+  overview: "A dinner party ends in a missing child and unraveling secrets.",
+  image: "https://m.media-amazon.com/images/I/81eHkYQgiUL.jpg"
+},
+{
+  title: "Behind Closed Doors",
+  author: "B.A. Paris",
+  genre: "Thriller",
+  price: 440,
+  rating: 4.4,
+  overview: "A perfect couple hides disturbing secrets behind closed doors.",
+  image: "https://m.media-amazon.com/images/I/91vKJSZ9kYL.jpg"
+},
+{
+  title: "The Chain",
+  author: "Adrian McKinty",
+  genre: "Thriller",
+  price: 490,
+  rating: 4.5,
+  overview: "To save your kidnapped child, you must kidnap another.",
+  image: "https://m.media-amazon.com/images/I/81hQuBMSbUL.jpg"
+},
+{
+  title: "Verity",
+  author: "Colleen Hoover",
+  genre: "Thriller",
+  price: 470,
+  rating: 4.6,
+  overview: "A struggling writer discovers a terrifying manuscript.",
+  image: "https://m.media-amazon.com/images/I/71rHiAeqLzL.jpg"
+},
+{
+  title: "Before I Go to Sleep",
+  author: "S.J. Watson",
+  genre: "Thriller",
+  price: 430,
+  rating: 4.4,
+  overview: "A woman loses her memory every day, but today something’s different.",
+  image: "https://m.media-amazon.com/images/I/71E3HiXEdmL.jpg"
+},
+{
+  title: "Behind Her Eyes",
+  author: "Sarah Pinborough",
+  genre: "Thriller",
+  price: 440,
+  rating: 4.3,
+  overview: "A twisted love triangle with a supernatural twist.",
+  image: "https://m.media-amazon.com/images/I/71UUk-AFiIL.jpg"
+},
+{
+  title: "Final Girls",
+  author: "Riley Sager",
+  genre: "Thriller",
+  price: 460,
+  rating: 4.4,
+  overview: "A survivor of a massacre is pulled back into the horror.",
+  image: "https://m.media-amazon.com/images/I/81kAvBOIURL.jpg"
+},
+{
+  title: "Home Before Dark",
+  author: "Riley Sager",
+  genre: "Thriller",
+  price: 480,
+  rating: 4.5,
+  overview: "A woman returns to a haunted house she fled as a child.",
+  image: "https://m.media-amazon.com/images/I/91tZQoVpKBL.jpg"
+},
+{
+  title: "The Girl on the Train",
+  author: "Paula Hawkins",
+  genre: "Thriller",
+  price: 450,
+  rating: 4.5,
+  overview: "A woman witnesses something shocking on her daily commute.",
+  image: "https://m.media-amazon.com/images/I/81BLjX-H6kL.jpg"
+},
+{
+  title: "An Anonymous Girl",
+  author: "Greer Hendricks & Sarah Pekkanen",
+  genre: "Thriller",
+  price: 470,
+  rating: 4.4,
+  overview: "A psychological study turns into a dangerous obsession.",
+  image: "https://m.media-amazon.com/images/I/91Ksz5rU-ZL.jpg"
+},
+{
+  title: "The Last Mrs. Parrish",
+  author: "Liv Constantine",
+  genre: "Thriller",
+  price: 460,
+  rating: 4.3,
+  overview: "A woman infiltrates a rich couple's life with a plan of her own.",
+  image: "https://m.media-amazon.com/images/I/81dzXWnSSBL.jpg"
+},
+{
+  title: "Lock Every Door",
+  author: "Riley Sager",
+  genre: "Thriller",
+  price: 450,
+  rating: 4.5,
+  overview: "A dream apartment job turns into a nightmare.",
+  image: "https://m.media-amazon.com/images/I/91Kds8mKtgL.jpg"
+},
+{
+  title: "The Perfect Nanny",
+  author: "Leïla Slimani",
+  genre: "Thriller",
+  price: 420,
+  rating: 4.2,
+  overview: "A perfect nanny commits the unthinkable. What went wrong?",
+  image: "https://m.media-amazon.com/images/I/81ae0knA6UL.jpg"
+},
+{
+  title: "The Turn of the Key",
+  author: "Ruth Ware",
+  genre: "Thriller",
+  price: 470,
+  rating: 4.4,
+  overview: "A nanny’s dream job in a smart house becomes her worst nightmare.",
+  image: "https://m.media-amazon.com/images/I/81UCjd3W9jL.jpg"
+},
+{
+  title: "Sometimes I Lie",
+  author: "Alice Feeney",
+  genre: "Thriller",
+  price: 440,
+  rating: 4.3,
+  overview: "A woman in a coma can hear everything—but no one knows.",
+  image: "https://m.media-amazon.com/images/I/81VuF+ZyV2L.jpg"
+},
+{
+  title: "The Housemaid",
+  author: "Freida McFadden",
+  genre: "Thriller",
+  price: 430,
+  rating: 4.6,
+  overview: "She thinks she’s getting a fresh start—but secrets await.",
+  image: "https://m.media-amazon.com/images/I/71sNxdZq8GL.jpg"
+}
+ //Add more books here if needed
+    ];
+
+    const container = document.getElementById("book-container");
+    const modal = document.getElementById("book-modal");
+
+    function renderBooks() {
+      books.forEach((book, index) => {
+        const card = document.createElement("div");
+        card.className = "book-card";
+        card.innerHTML = `
+          <img src="${book.image}" alt="${book.title}" class="book-image">
+          <div class="book-title">${book.title}</div>
+        `;
+        card.onclick = () => openModal(book);
+        container.appendChild(card);
+      });
+    }
+
+    function openModal(book) {
+      document.getElementById("modal-title").innerText = book.title;
+      document.getElementById("modal-author").innerText = book.author;
+      document.getElementById("modal-genre").innerText = book.genre;
+      document.getElementById("modal-price").innerText = book.price;
+      document.getElementById("modal-rating").innerText = book.rating;
+      document.getElementById("modal-overview").innerText = book.overview;
+      modal.classList.add("active");
+    }
+
+    function closeModal() {
+      modal.classList.remove("active");
+    }
+
+    renderBooks();
+  </script>
+</body>
+</html>

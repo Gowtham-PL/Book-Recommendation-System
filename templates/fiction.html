@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fiction Books</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <a href="index.html"></a>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Roboto', sans-serif;
+      background: #f0f2f5;
+      color: #333;
+      overflow-x: hidden;
+      animation: fadeIn 1s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    header {
+      background: #1e3d59;
+      color: white;
+      padding: 1rem;
+      text-align: center;
+      font-size: 1.8rem;
+      font-weight: 700;
+    }
+
+    .container {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 20px;
+      padding: 2rem;
+    }
+
+    .book-card {
+      background: white;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      cursor: pointer;
+      transition: transform 0.3s ease;
+    }
+
+    .book-card:hover {
+      transform: scale(1.05);
+    }
+
+    .book-image {
+      width: 100%;
+      height: 280px;
+      object-fit: cover;
+    }
+
+    .book-title {
+      padding: 1rem;
+      font-weight: bold;
+      text-align: center;
+    }
+
+    .modal {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      visibility: hidden;
+      opacity: 0;
+      transition: all 0.3s ease-in-out;
+    }
+
+    .modal.active {
+      visibility: visible;
+      opacity: 1;
+    }
+
+    .modal-content {
+      background: white;
+      padding: 2rem;
+      border-radius: 10px;
+      max-width: 500px;
+      text-align: left;
+    }
+
+    .modal-content h3 {
+      margin-top: 0;
+    }
+
+    .close-btn {
+      float: right;
+      cursor: pointer;
+      font-size: 1.2rem;
+      color: #666;
+    }
+  </style>
+</head>
+<body>
+  <header>Fiction Books</header>
+  <div class="container" id="book-container"></div>
+
+  <div class="modal" id="book-modal">
+    <div class="modal-content">
+      <span class="close-btn" onclick="closeModal()">&times;</span>
+      <h3 id="modal-title"></h3>
+      <p><strong>Author:</strong> <span id="modal-author"></span></p>
+      <p><strong>Genre:</strong> <span id="modal-genre"></span></p>
+      <p><strong>Price:</strong> ₹<span id="modal-price"></span></p>
+      <p><strong>Rating:</strong> <span id="modal-rating"></span> ⭐</p>
+      <p id="modal-overview"></p>
+    </div>
+  </div>
+
+  <script>
+    const books = [
+    {
+  title: "The Midnight Library",
+  author: "Matt Haig",
+  genre: "Fiction",
+  price: 470,
+  rating: 4.6,
+  overview: "A woman discovers a library that lets her explore alternate lives.",
+  image: "https://m.media-amazon.com/images/I/81eP4vKJ9eL.jpg"
+},
+{
+  title: "Where the Crawdads Sing",
+  author: "Delia Owens",
+  genre: "Fiction",
+  price: 460,
+  rating: 4.7,
+  overview: "A young woman grows up alone in the marsh and becomes a suspect in a murder.",
+  image: "https://m.media-amazon.com/images/I/81WWiiLgTyL.jpg"
+},
+{
+  title: "It Ends with Us",
+  author: "Colleen Hoover",
+  genre: "Fiction",
+  price: 450,
+  rating: 4.6,
+  overview: "A powerful love story that challenges emotional boundaries.",
+  image: "https://m.media-amazon.com/images/I/81s0B6NYXML.jpg"
+},
+{
+  title: "The Seven Husbands of Evelyn Hugo",
+  author: "Taylor Jenkins Reid",
+  genre: "Fiction",
+  price: 480,
+  rating: 4.7,
+  overview: "An aging Hollywood starlet reveals her scandalous past.",
+  image: "https://m.media-amazon.com/images/I/71T0g5rxLmL.jpg"
+},
+{
+  title: "Lessons in Chemistry",
+  author: "Bonnie Garmus",
+  genre: "Fiction",
+  price: 470,
+  rating: 4.5,
+  overview: "A female chemist defies norms in the 1960s with science and wit.",
+  image: "https://m.media-amazon.com/images/I/81vpsIs58WL.jpg"
+},
+{
+  title: "The Alchemist",
+  author: "Paulo Coelho",
+  genre: "Fiction",
+  price: 420,
+  rating: 4.8,
+  overview: "A shepherd's journey in search of a treasure and self-discovery.",
+  image: "https://m.media-amazon.com/images/I/71aFt4+OTOL.jpg"
+},
+{
+  title: "Tomorrow, and Tomorrow, and Tomorrow",
+  author: "Gabrielle Zevin",
+  genre: "Fiction",
+  price: 490,
+  rating: 4.6,
+  overview: "Two friends build video games—and a lifelong bond.",
+  image: "https://m.media-amazon.com/images/I/81th+obvH4L.jpg"
+},
+{
+  title: "The Night Circus",
+  author: "Erin Morgenstern",
+  genre: "Fiction",
+  price: 470,
+  rating: 4.5,
+  overview: "A magical competition unfolds under the cover of a mysterious circus.",
+  image: "https://m.media-amazon.com/images/I/81Zz7uGwRzL.jpg"
+},
+{
+  title: "The Book Thief",
+  author: "Markus Zusak",
+  genre: "Fiction",
+  price: 480,
+  rating: 4.8,
+  overview: "A girl steals books and shares stories during WWII in Nazi Germany.",
+  image: "https://m.media-amazon.com/images/I/81drfTT9ZfL.jpg"
+},
+{
+  title: "Circe",
+  author: "Madeline Miller",
+  genre: "Fiction",
+  price: 460,
+  rating: 4.7,
+  overview: "The untold tale of a goddess banished to an island of magic.",
+  image: "https://m.media-amazon.com/images/I/91b0C2YNSrL.jpg"
+},
+{
+  title: "The Paper Palace",
+  author: "Miranda Cowley Heller",
+  genre: "Fiction",
+  price: 450,
+  rating: 4.4,
+  overview: "A woman must choose between her past and her present love.",
+  image: "https://m.media-amazon.com/images/I/81v9HZu+ShL.jpg"
+},
+{
+  title: "A Man Called Ove",
+  author: "Fredrik Backman",
+  genre: "Fiction",
+  price: 430,
+  rating: 4.6,
+  overview: "A grumpy old man finds unexpected friendship and redemption.",
+  image: "https://m.media-amazon.com/images/I/81VStYnDGrL.jpg"
+},
+{
+  title: "The Dutch House",
+  author: "Ann Patchett",
+  genre: "Fiction",
+  price: 470,
+  rating: 4.4,
+  overview: "A brother and sister are exiled from the house that defined their childhood.",
+  image: "https://m.media-amazon.com/images/I/81dxzjqEbGL.jpg"
+},
+{
+  title: "Normal People",
+  author: "Sally Rooney",
+  genre: "Fiction",
+  price: 440,
+  rating: 4.3,
+  overview: "A deep, raw love story between two flawed individuals.",
+  image: "https://m.media-amazon.com/images/I/71UgY2B+UxL.jpg"
+},
+{
+  title: "Beautiful World, Where Are You",
+  author: "Sally Rooney",
+  genre: "Fiction",
+  price: 460,
+  rating: 4.2,
+  overview: "A story of friendship, sex, and the messy nature of adulthood.",
+  image: "https://m.media-amazon.com/images/I/81cozL6gZgL.jpg"
+},
+{
+  title: "The Paris Library",
+  author: "Janet Skeslien Charles",
+  genre: "Fiction",
+  price: 480,
+  rating: 4.5,
+  overview: "A WWII tale of resistance, books, and friendship in Paris.",
+  image: "https://m.media-amazon.com/images/I/81osUuC5kYL.jpg"
+},
+{
+  title: "Shatter Me",
+  author: "Tahereh Mafi",
+  genre: "Fiction",
+  price: 430,
+  rating: 4.4,
+  overview: "A girl with a deadly touch is imprisoned and then set free.",
+  image: "https://m.media-amazon.com/images/I/91xZJkVUNNL.jpg"
+},
+{
+  title: "The Midnight Library",
+  author: "Matt Haig",
+  genre: "Fiction",
+  price: 470,
+  rating: 4.6,
+  overview: "A woman explores alternate lives through a magical library.",
+  image: "https://m.media-amazon.com/images/I/81eP4vKJ9eL.jpg"
+},
+{
+  title: "Pachinko",
+  author: "Min Jin Lee",
+  genre: "Fiction",
+  price: 490,
+  rating: 4.7,
+  overview: "A Korean family's generational saga of survival and hope.",
+  image: "https://m.media-amazon.com/images/I/81zQSMZ8VZL.jpg"
+},
+{
+  title: "Daisy Jones & The Six",
+  author: "Taylor Jenkins Reid",
+  genre: "Fiction",
+  price: 470,
+  rating: 4.6,
+  overview: "A fictional rock band’s rise and fall told through interviews.",
+  image: "https://m.media-amazon.com/images/I/81dGfF2RzUL.jpg"
+}
+
+ //Add more books here if needed
+    ];
+
+    const container = document.getElementById("book-container");
+    const modal = document.getElementById("book-modal");
+
+    function renderBooks() {
+      books.forEach((book, index) => {
+        const card = document.createElement("div");
+        card.className = "book-card";
+        card.innerHTML = `
+          <img src="${book.image}" alt="${book.title}" class="book-image">
+          <div class="book-title">${book.title}</div>
+        `;
+        card.onclick = () => openModal(book);
+        container.appendChild(card);
+      });
+    }
+
+    function openModal(book) {
+      document.getElementById("modal-title").innerText = book.title;
+      document.getElementById("modal-author").innerText = book.author;
+      document.getElementById("modal-genre").innerText = book.genre;
+      document.getElementById("modal-price").innerText = book.price;
+      document.getElementById("modal-rating").innerText = book.rating;
+      document.getElementById("modal-overview").innerText = book.overview;
+      modal.classList.add("active");
+    }
+
+    function closeModal() {
+      modal.classList.remove("active");
+    }
+
+    renderBooks();
+  </script>
+</body>
+</html>

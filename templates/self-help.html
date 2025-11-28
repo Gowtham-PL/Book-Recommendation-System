@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Self-Help Books</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <a href="index.html"></a>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Roboto', sans-serif;
+      background: #f0f2f5;
+      color: #333;
+      overflow-x: hidden;
+      animation: fadeIn 1s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    header {
+      background: #1e3d59;
+      color: white;
+      padding: 1rem;
+      text-align: center;
+      font-size: 1.8rem;
+      font-weight: 700;
+    }
+
+    .container {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 20px;
+      padding: 2rem;
+    }
+
+    .book-card {
+      background: white;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      cursor: pointer;
+      transition: transform 0.3s ease;
+    }
+
+    .book-card:hover {
+      transform: scale(1.05);
+    }
+
+    .book-image {
+      width: 100%;
+      height: 280px;
+      object-fit: cover;
+    }
+
+    .book-title {
+      padding: 1rem;
+      font-weight: bold;
+      text-align: center;
+    }
+
+    .modal {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      visibility: hidden;
+      opacity: 0;
+      transition: all 0.3s ease-in-out;
+    }
+
+    .modal.active {
+      visibility: visible;
+      opacity: 1;
+    }
+
+    .modal-content {
+      background: white;
+      padding: 2rem;
+      border-radius: 10px;
+      max-width: 500px;
+      text-align: left;
+    }
+
+    .modal-content h3 {
+      margin-top: 0;
+    }
+
+    .close-btn {
+      float: right;
+      cursor: pointer;
+      font-size: 1.2rem;
+      color: #666;
+    }
+  </style>
+</head>
+<body>
+  <header>Self-Help Books</header>
+  <div class="container" id="book-container"></div>
+
+  <div class="modal" id="book-modal">
+    <div class="modal-content">
+      <span class="close-btn" onclick="closeModal()">&times;</span>
+      <h3 id="modal-title"></h3>
+      <p><strong>Author:</strong> <span id="modal-author"></span></p>
+      <p><strong>Genre:</strong> <span id="modal-genre"></span></p>
+      <p><strong>Price:</strong> ₹<span id="modal-price"></span></p>
+      <p><strong>Rating:</strong> <span id="modal-rating"></span> ⭐</p>
+      <p id="modal-overview"></p>
+    </div>
+  </div>
+
+  <script>
+    const books = [
+    {
+  title: "The Power of Now",
+  author: "Eckhart Tolle",
+  genre: "Self-Help",
+  price: 460,
+  rating: 4.7,
+  overview: "A guide to spiritual enlightenment and living in the present moment.",
+  image: "https://m.media-amazon.com/images/I/71sBtM3Yi5L.jpg"
+},
+{
+  title: "Awaken the Giant Within",
+  author: "Tony Robbins",
+  genre: "Self-Help",
+  price: 499,
+  rating: 4.6,
+  overview: "Take control of your emotions, finances, relationships, and life.",
+  image: "static/awaken.jpg"
+},
+{
+  title: "The Four Agreements",
+  author: "Don Miguel Ruiz",
+  genre: "Self-Help",
+  price: 370,
+  rating: 4.6,
+  overview: "A code of conduct for personal freedom and peace.",
+  image: "static/fourt.jpg"
+},
+{
+  title: "The Magic of Thinking Big",
+  author: "David J. Schwartz",
+  genre: "Self-Help",
+  price: 420,
+  rating: 4.5,
+  overview: "Achieve success by thinking positively and setting high goals.",
+  image: "static/magic.jpg"
+},
+{
+  title: "Who Moved My Cheese?",
+  author: "Spencer Johnson",
+  genre: "Self-Help",
+  price: 350,
+  rating: 4.4,
+  overview: "An allegorical tale that teaches change management.",
+  image: "static/moved.jpg"
+},
+{
+  title: "You Are a Badass",
+  author: "Jen Sincero",
+  genre: "Self-Help",
+  price: 430,
+  rating: 4.6,
+  overview: "How to stop doubting your greatness and start living an awesome life.",
+  image: "https://m.media-amazon.com/images/I/81-QB7nDh4L.jpg"
+},
+{
+  title: "The Miracle Morning",
+  author: "Hal Elrod",
+  genre: "Self-Help",
+  price: 410,
+  rating: 4.4,
+  overview: "Transform your life by changing your morning routine.",
+  image: "static/miracle.jpg"
+},
+{
+  title: "The Mountain Is You",
+  author: "Brianna Wiest",
+  genre: "Self-Help",
+  price: 450,
+  rating: 4.7,
+  overview: "Transforming self-sabotage into self-mastery.",
+  image: "static/mountain.jpg"
+},
+{
+  title: "Unfu*k Yourself",
+  author: "Gary John Bishop",
+  genre: "Self-Help",
+  price: 390,
+  rating: 4.5,
+  overview: "Get out of your head and into your life.",
+  image: "static/yourself.jpg"
+},
+{
+  title: "The Gifts of Imperfection",
+  author: "Brené Brown",
+  genre: "Self-Help",
+  price: 460,
+  rating: 4.7,
+  overview: "Let go of who you think you’re supposed to be and embrace who you are.",
+  image: "static/gifts.jpg"
+},
+{
+  title: "No Excuses!",
+  author: "Brian Tracy",
+  genre: "Self-Help",
+  price: 410,
+  rating: 4.5,
+  overview: "The power of self-discipline for success in life.",
+  image: "static/no.jpg"
+},
+{
+  title: "Feel the Fear and Do It Anyway",
+  author: "Susan Jeffers",
+  genre: "Self-Help",
+  price: 430,
+  rating: 4.6,
+  overview: "Overcome fear and live the life you want.",
+  image: "static/feel.jpg"
+},
+{
+  title: "Grit",
+  author: "Angela Duckworth",
+  genre: "Self-Help",
+  price: 480,
+  rating: 4.7,
+  overview: "The power of passion and perseverance.",
+  image: "static/grit.jpg"
+},
+{
+  title: "Ego is the Enemy",
+  author: "Ryan Holiday",
+  genre: "Self-Help",
+  price: 470,
+  rating: 4.6,
+  overview: "Conquering your ego to find lasting success.",
+  image: "static/ego.jpg"
+},
+{
+  title: "Stillness is the Key",
+  author: "Ryan Holiday",
+  genre: "Self-Help",
+  price: 475,
+  rating: 4.6,
+  overview: "Unlocking the power of inner peace and clarity.",
+  image: "static/stillness.jpg"
+},
+{
+  title: "Think Like a Monk",
+  author: "Jay Shetty",
+  genre: "Self-Help",
+  price: 450,
+  rating: 4.6,
+  overview: "Train your mind for peace and purpose every day.",
+  image: "https://m.media-amazon.com/images/I/81s6DUyQCZL.jpg"
+},
+{
+  title: "The Compound Effect",
+  author: "Darren Hardy",
+  genre: "Self-Help",
+  price: 430,
+  rating: 4.6,
+  overview: "Jumpstart your income, your life, and your success.",
+  image: "static/compound.jpg"
+},
+{
+  title: "Make Your Bed",
+  author: "Admiral William H. McRaven",
+  genre: "Self-Help",
+  price: 350,
+  rating: 4.6,
+  overview: "Little things that can change your life… and maybe the world.",
+  image: "static/bed.jpg"
+},
+{
+  title: "The War of Art",
+  author: "Steven Pressfield",
+  genre: "Self-Help",
+  price: 410,
+  rating: 4.6,
+  overview: "Break through creative blocks and win your inner creative battles.",
+  image: "static/war.jpg"
+},
+{
+  title: "Drive",
+  author: "Daniel H. Pink",
+  genre: "Self-Help",
+  price: 490,
+  rating: 4.5,
+  overview: "The surprising truth about what motivates us.",
+  image: "static/drive.jpg"
+}
+
+      // Add more books here if needed
+    ];
+
+    const container = document.getElementById("book-container");
+    const modal = document.getElementById("book-modal");
+
+    function renderBooks() {
+      books.forEach((book, index) => {
+        const card = document.createElement("div");
+        card.className = "book-card";
+        card.innerHTML = `
+          <img src="${book.image}" alt="${book.title}" class="book-image">
+          <div class="book-title">${book.title}</div>
+        `;
+        card.onclick = () => openModal(book);
+        container.appendChild(card);
+      });
+    }
+
+    function openModal(book) {
+      document.getElementById("modal-title").innerText = book.title;
+      document.getElementById("modal-author").innerText = book.author;
+      document.getElementById("modal-genre").innerText = book.genre;
+      document.getElementById("modal-price").innerText = book.price;
+      document.getElementById("modal-rating").innerText = book.rating;
+      document.getElementById("modal-overview").innerText = book.overview;
+      modal.classList.add("active");
+    }
+
+    function closeModal() {
+      modal.classList.remove("active");
+    }
+
+    renderBooks();
+  </script>
+</body>
+</html>

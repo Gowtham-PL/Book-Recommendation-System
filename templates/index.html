@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Book Store</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            background-color: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #00447c;
+            text-align: left;
+            flex: 1;
+            cursor: pointer;
+        }
+
+        nav ul {
+            list-style: none;
+            display: flex;
+            gap: 20px;
+            padding: 0;
+            margin: 0;
+            justify-content: center;
+            flex: 2;
+        }
+
+        nav ul li {
+            position: relative;
+            margin: 0 10px;
+        }
+
+        nav ul li a {
+            text-decoration: none;
+            color: black;
+            font-size: 16px;
+            padding: 5px 10px;
+            display: inline-block;
+            transition: color 0.3s;
+        }
+
+        nav ul li a:hover {
+            color: #0072c6;
+        }
+
+        nav ul li a:visited {
+            color: black;
+        }
+
+        nav ul li a:active {
+            color: #0072c6;
+        }
+
+        nav ul li a.hover-effect::after {
+            content: '';
+            display: block;
+            height: 3px;
+            width: 0;
+            background: #0072c6;
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            transition: width 0.3s ease-in-out;
+        }
+
+        nav ul li a.hover-effect:hover::after {
+            width: 100%;
+        }
+
+        .hero {
+            text-align: center;
+            padding: 180px 20px;
+            background: #f4f4f4;
+            position: relative;
+            overflow: hidden;
+            height: 420px;
+        }
+        
+        .hero h1 {
+            font-size: 36px;
+            color: #00447c;
+            position: absolute;
+            bottom: 180px;
+            left: 0;
+            right: 0;
+            margin: 0;
+            z-index: 1;
+            background-color: rgba(244, 244, 244, 0.5);
+            padding: 10px;
+        }
+        
+        .hero-image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center 20%;
+            z-index: 0;
+        }
+
+        .chat-button {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 130px;
+            height: 120px;
+            border-radius: 50%;
+            background: rgba(0, 200, 255, 0.2);
+            backdrop-filter: blur(10px);
+            color: black;
+            font-size: 14px;
+            font-weight: bold;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 2px solid rgba(255, 0, 0, 0.5);
+            cursor: pointer;
+            box-shadow: 0px 5px 15px rgba(255, 0, 0, 0.5);
+            transition: all 0.3s ease-in-out;
+        }
+
+        .chat-button:hover {
+            transform: scale(1.2);
+            box-shadow: 0px 10px 30px rgba(0, 200, 255, 0.8);
+        }
+
+        .chat-button:active {
+            transform: scale(0.9);
+        }
+
+        .Symp {
+            text-decoration: none;
+            list-style: none;
+            display: flex;
+            font-size: larger;
+            padding: 0;
+            margin: 0;
+            color: black;
+            gap: 40px;
+            justify-content: center;
+        }
+        
+        .Symp li {
+            position: relative;
+        }
+        
+        .Symp li a {
+            text-decoration: none;
+            color: inherit;
+            font-size: 16px;
+            padding: 5px 10px;
+            display: inline-block;
+            transition: color 0.3s, text-decoration 0.3s;
+        }
+        
+        .Symp li a:hover {
+            color: #0072c6;
+        }
+        
+        .Symp li a:visited {
+            color: black;
+        }
+        
+        .Symp li a:active {
+            color: #0072c6;
+        }
+        
+        .Symp li a.hover-effect:hover {
+            text-decoration: underline;
+            text-decoration-color: #0072c6;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">The Book Store</div>
+        <nav>
+            <ul>
+                <li><a href="/ai.html" class="hover-effect">Recommendation AI</a></li>
+                <li><a href="/popular.html" class="hover-effect">Popular</a></li>
+                <li><a href="/self-help.html" class="hover-effect">Self-Help</a></li>
+                <li><a href="/thriller.html" class="hover-effect">Thriller</a></li>
+                <li><a href="/fiction.html" class="hover-effect">Fiction</a></li>
+                <li><a href="/biography & auto-biography.html" class="hover-effect">Biography & Auto-Biography</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <section class="hero">
+        <img src="static/image.jpg" alt="Book Store Hero Image" class="hero-image">
+        <h1 class="hero-text">We're here when pages turn — for every tale worth telling.</h1>
+    </section>
+    
+    <script>
+        // Add this to your index.html within a <script> tag at the end of the body
+
+document.addEventListener('DOMContentLoaded', function() {
+  // Get all category buttons
+  const categoryButtons = document.querySelectorAll('.category-button, [href="templates/popular.html"], [href="self-help.html"], [href="fiction.html"], [href="thriller.html"], [href="biography.html"]');
+  
+  // Add click event listeners to all category buttons
+  categoryButtons.forEach(button => {
+    button.addEventListener('click', function(e) {
+      e.preventDefault();
+      
+      // Get the page to load
+      const pageToLoad = this.getAttribute('href') || this.getAttribute('data-page');
+      
+      // Load the content
+      fetch(pageToLoad)
+        .then(response => response.text())
+        .then(html => {
+          // Find the content area in the fetched HTML
+          const parser = new DOMParser();
+          const doc = parser.parseFromString(html, 'text/html');
+          const content = doc.querySelector('#content') || doc.querySelector('.content-area') || doc.body;
+          
+          // Update the content area in the current page
+          document.querySelector('#content-area').innerHTML = content.innerHTML;
+        })
+        .catch(error => {
+          console.error('Error loading page:', error);
+        });
+    });
+  });
+});
+    </script>
+</body>
+</html>

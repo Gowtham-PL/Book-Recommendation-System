@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Self-Help Books</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <a href="index.html"></a>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Roboto', sans-serif;
+      background: #f0f2f5;
+      color: #333;
+      overflow-x: hidden;
+      animation: fadeIn 1s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    header {
+      background: #1e3d59;
+      color: white;
+      padding: 1rem;
+      text-align: center;
+      font-size: 1.8rem;
+      font-weight: 700;
+    }
+
+    .container {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 20px;
+      padding: 2rem;
+    }
+
+    .book-card {
+      background: white;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      cursor: pointer;
+      transition: transform 0.3s ease;
+    }
+
+    .book-card:hover {
+      transform: scale(1.05);
+    }
+
+    .book-image {
+      width: 100%;
+      height: 280px;
+      object-fit: cover;
+    }
+
+    .book-title {
+      padding: 1rem;
+      font-weight: bold;
+      text-align: center;
+    }
+
+    .modal {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      visibility: hidden;
+      opacity: 0;
+      transition: all 0.3s ease-in-out;
+    }
+
+    .modal.active {
+      visibility: visible;
+      opacity: 1;
+    }
+
+    .modal-content {
+      background: white;
+      padding: 2rem;
+      border-radius: 10px;
+      max-width: 500px;
+      text-align: left;
+    }
+
+    .modal-content h3 {
+      margin-top: 0;
+    }
+
+    .close-btn {
+      float: right;
+      cursor: pointer;
+      font-size: 1.2rem;
+      color: #666;
+    }
+  </style>
+</head>
+<body>
+  <header>Biography & Auto-Biography Books</header>
+  <div class="container" id="book-container"></div>
+
+  <div class="modal" id="book-modal">
+    <div class="modal-content">
+      <span class="close-btn" onclick="closeModal()">&times;</span>
+      <h3 id="modal-title"></h3>
+      <p><strong>Author:</strong> <span id="modal-author"></span></p>
+      <p><strong>Genre:</strong> <span id="modal-genre"></span></p>
+      <p><strong>Price:</strong> ₹<span id="modal-price"></span></p>
+      <p><strong>Rating:</strong> <span id="modal-rating"></span> ⭐</p>
+      <p id="modal-overview"></p>
+    </div>
+  </div>
+
+  <script>
+    const books = [
+    {
+  title: "The Diary of a Young Girl",
+  author: "Anne Frank",
+  genre: "Autobiography",
+  price: 420,
+  rating: 4.8,
+  overview: "The poignant writings of Anne Frank while hiding during WWII.",
+  image: "https://m.media-amazon.com/images/I/81lZ1tK4qlL.jpg"
+},
+{
+  title: "Long Walk to Freedom",
+  author: "Nelson Mandela",
+  genre: "Autobiography",
+  price: 480,
+  rating: 4.9,
+  overview: "Nelson Mandela’s inspiring life story from prisoner to president.",
+  image: "https://m.media-amazon.com/images/I/71UwSHSZRnS.jpg"
+},
+{
+  title: "Becoming",
+  author: "Michelle Obama",
+  genre: "Autobiography",
+  price: 500,
+  rating: 4.9,
+  overview: "A deeply personal memoir by the former First Lady of the U.S.",
+  image: "https://m.media-amazon.com/images/I/81h2gWPTYJL.jpg"
+},
+{
+  title: "Educated",
+  author: "Tara Westover",
+  genre: "Autobiography",
+  price: 470,
+  rating: 4.8,
+  overview: "A woman breaks free from her survivalist upbringing to pursue education.",
+  image: "https://m.media-amazon.com/images/I/81WojUxbbFL.jpg"
+},
+{
+  title: "Steve Jobs",
+  author: "Walter Isaacson",
+  genre: "Biography",
+  price: 520,
+  rating: 4.7,
+  overview: "A detailed biography of Apple’s visionary co-founder.",
+  image: "https://m.media-amazon.com/images/I/81VStYnDGrL.jpg"
+},
+{
+  title: "The Story of My Experiments with Truth",
+  author: "Mahatma Gandhi",
+  genre: "Autobiography",
+  price: 400,
+  rating: 4.6,
+  overview: "Mahatma Gandhi’s spiritual and political journey through life.",
+  image: "https://m.media-amazon.com/images/I/81KpLk0XqtL.jpg"
+},
+{
+  title: "Wings of Fire",
+  author: "A.P.J. Abdul Kalam",
+  genre: "Autobiography",
+  price: 420,
+  rating: 4.8,
+  overview: "The journey of India’s Missile Man and former President.",
+  image: "https://m.media-amazon.com/images/I/91qv0A+NxHL.jpg"
+},
+{
+  title: "I Am Malala",
+  author: "Malala Yousafzai",
+  genre: "Autobiography",
+  price: 450,
+  rating: 4.7,
+  overview: "The youngest Nobel Prize winner's fight for girls' education.",
+  image: "https://m.media-amazon.com/images/I/81S-7ftAsZL.jpg"
+},
+{
+  title: "Einstein: His Life and Universe",
+  author: "Walter Isaacson",
+  genre: "Biography",
+  price: 490,
+  rating: 4.8,
+  overview: "A detailed account of Albert Einstein’s revolutionary life.",
+  image: "https://m.media-amazon.com/images/I/81bqRB-MI3L.jpg"
+},
+{
+  title: "A Promised Land",
+  author: "Barack Obama",
+  genre: "Autobiography",
+  price: 520,
+  rating: 4.9,
+  overview: "The journey of Barack Obama’s political career and presidency.",
+  image: "https://m.media-amazon.com/images/I/81Vz5nkDURL.jpg"
+},
+{
+  title: "Open",
+  author: "Andre Agassi",
+  genre: "Autobiography",
+  price: 450,
+  rating: 4.7,
+  overview: "A raw and revealing memoir from tennis legend Andre Agassi.",
+  image: "https://m.media-amazon.com/images/I/71xyLMDUpAL.jpg"
+},
+{
+  title: "Shoe Dog",
+  author: "Phil Knight",
+  genre: "Autobiography",
+  price: 470,
+  rating: 4.8,
+  overview: "The untold story of Nike’s creator and his relentless journey.",
+  image: "https://m.media-amazon.com/images/I/81mjh5ZSu1L.jpg"
+},
+{
+  title: "Leonardo da Vinci",
+  author: "Walter Isaacson",
+  genre: "Biography",
+  price: 500,
+  rating: 4.8,
+  overview: "An in-depth look at the life of the Renaissance genius.",
+  image: "https://m.media-amazon.com/images/I/81wcxmHqdzL.jpg"
+},
+{
+  title: "The Wright Brothers",
+  author: "David McCullough",
+  genre: "Biography",
+  price: 460,
+  rating: 4.6,
+  overview: "The story of two brothers who changed the world with flight.",
+  image: "https://m.media-amazon.com/images/I/91m2p6ZrKcL.jpg"
+},
+{
+  title: "The Glass Castle",
+  author: "Jeannette Walls",
+  genre: "Autobiography",
+  price: 440,
+  rating: 4.6,
+  overview: "A memoir of resilience, poverty, and family struggles.",
+  image: "https://m.media-amazon.com/images/I/81pZ5fU-KiL.jpg"
+},
+{
+  title: "Born a Crime",
+  author: "Trevor Noah",
+  genre: "Autobiography",
+  price: 460,
+  rating: 4.8,
+  overview: "Trevor Noah’s story of growing up under apartheid in South Africa.",
+  image: "https://m.media-amazon.com/images/I/81ULtJpg-cL.jpg"
+},
+{
+  title: "Bossypants",
+  author: "Tina Fey",
+  genre: "Autobiography",
+  price: 430,
+  rating: 4.5,
+  overview: "A humorous memoir by the SNL star and comedy legend.",
+  image: "https://m.media-amazon.com/images/I/81U5EAPq3yL.jpg"
+},
+{
+  title: "My Life in Full",
+  author: "Indra Nooyi",
+  genre: "Autobiography",
+  price: 470,
+  rating: 4.7,
+  overview: "The inspiring life and leadership lessons from PepsiCo’s former CEO.",
+  image: "https://m.media-amazon.com/images/I/91L1s05S-EL.jpg"
+},
+{
+  title: "This Is Going to Hurt",
+  author: "Adam Kay",
+  genre: "Autobiography",
+  price: 440,
+  rating: 4.6,
+  overview: "A hilarious and heartbreaking account of life as a junior doctor.",
+  image: "https://m.media-amazon.com/images/I/81VZ2Fi2xaL.jpg"
+},
+{
+  title: "Can't Hurt Me",
+  author: "David Goggins",
+  genre: "Autobiography",
+  price: 490,
+  rating: 4.9,
+  overview: "David Goggins' story of pushing limits, pain, and personal transformation.",
+  image: "https://m.media-amazon.com/images/I/81K0f+3pZ5L.jpg"
+}
+
+
+      // Add more books here if needed
+    ];
+
+    const container = document.getElementById("book-container");
+    const modal = document.getElementById("book-modal");
+
+    function renderBooks() {
+      books.forEach((book, index) => {
+        const card = document.createElement("div");
+        card.className = "book-card";
+        card.innerHTML = `
+          <img src="${book.image}" alt="${book.title}" class="book-image">
+          <div class="book-title">${book.title}</div>
+        `;
+        card.onclick = () => openModal(book);
+        container.appendChild(card);
+      });
+    }
+
+    function openModal(book) {
+      document.getElementById("modal-title").innerText = book.title;
+      document.getElementById("modal-author").innerText = book.author;
+      document.getElementById("modal-genre").innerText = book.genre;
+      document.getElementById("modal-price").innerText = book.price;
+      document.getElementById("modal-rating").innerText = book.rating;
+      document.getElementById("modal-overview").innerText = book.overview;
+      modal.classList.add("active");
+    }
+
+    function closeModal() {
+      modal.classList.remove("active");
+    }
+
+    renderBooks();
+  </script>
+</body>
+</html>

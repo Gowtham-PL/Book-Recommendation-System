@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Popular Books</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <a href="index.html"></a>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Roboto', sans-serif;
+      background: #f0f2f5;
+      color: #333;
+      overflow-x: hidden;
+      animation: fadeIn 1s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    header {
+      background: #1e3d59;
+      color: white;
+      padding: 1rem;
+      text-align: center;
+      font-size: 1.8rem;
+      font-weight: 700;
+    }
+
+    .container {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 20px;
+      padding: 2rem;
+    }
+
+    .book-card {
+      background: white;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      cursor: pointer;
+      transition: transform 0.3s ease;
+    }
+
+    .book-card:hover {
+      transform: scale(1.05);
+    }
+
+    .book-image {
+      width: 100%;
+      height: 280px;
+      object-fit: cover;
+    }
+
+    .book-title {
+      padding: 1rem;
+      font-weight: bold;
+      text-align: center;
+    }
+
+    .modal {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      visibility: hidden;
+      opacity: 0;
+      transition: all 0.3s ease-in-out;
+    }
+
+    .modal.active {
+      visibility: visible;
+      opacity: 1;
+    }
+
+    .modal-content {
+      background: white;
+      padding: 2rem;
+      border-radius: 10px;
+      max-width: 500px;
+      text-align: left;
+    }
+
+    .modal-content h3 {
+      margin-top: 0;
+    }
+
+    .close-btn {
+      float: right;
+      cursor: pointer;
+      font-size: 1.2rem;
+      color: #666;
+    }
+  </style>
+</head>
+<body>
+  <header>Popular Books</header>
+  <div class="container" id="book-container"></div>
+
+  <div class="modal" id="book-modal">
+    <div class="modal-content">
+      <span class="close-btn" onclick="closeModal()">&times;</span>
+      <h3 id="modal-title"></h3>
+      <p><strong>Author:</strong> <span id="modal-author"></span></p>
+      <p><strong>Genre:</strong> <span id="modal-genre"></span></p>
+      <p><strong>Price:</strong> ₹<span id="modal-price"></span></p>
+      <p><strong>Rating:</strong> <span id="modal-rating"></span> ⭐</p>
+      <p id="modal-overview"></p>
+    </div>
+  </div>
+
+  <script>
+    const books = [
+      {
+        title: "Atomic Habits",
+        author: "James Clear",
+        genre: "Self-Help", 
+        price: 450,
+        rating: 4.8,
+        overview: "A practical guide to building good habits and breaking bad ones.",
+        image: "https://m.media-amazon.com/images/I/91bYsX41DVL.jpg"
+      },
+      {
+        title: "The Alchemist",
+        author: "Paulo Coelho",
+        genre: "Fiction",
+        price: 299,
+        rating: 4.6,
+        overview: "A fable about following your dreams and finding your purpose in life.",
+        image: "https://m.media-amazon.com/images/I/71aFt4+OTOL.jpg"
+      },
+      {
+        title: "Ikigai",
+        author: "Héctor García & Francesc Miralles",
+        genre: "Self-Help",
+        price: 350,
+        rating: 4.4,
+        overview: "Discover the Japanese secret to a long and happy life.",
+        image: "static/ikigai.jpg"
+      },
+      {
+        title: "Rich Dad Poor Dad",
+        author: "Robert T. Kiyosaki",
+        genre: "Finance",
+        price: 399,
+        rating: 4.5,
+        overview: "Learn the importance of financial literacy and wealth building.",
+        image: "https://m.media-amazon.com/images/I/81bsw6fnUiL.jpg"
+      },
+      {
+        title: "Can't Hurt Me",
+        author: "David Goggins",
+        genre: "Self-Help",
+        price: 520,
+        rating: 4.7,
+        overview: "A powerful memoir of Navy SEAL David Goggins and his journey from pain to personal mastery.",
+        image: "static/hurt.jpg"
+        },
+        {
+        title: "The 5 AM Club",
+        author: "Robin Sharma",
+        genre: "Self-Help",
+        price: 399,
+        rating: 4.4,
+        overview: "Revolutionize your mornings and elevate your life by rising early.",
+        image: "static/club.jpg"
+        },
+        {
+        title: "Deep Work",
+        author: "Cal Newport",
+        genre: "Productivity",
+        price: 475,
+        rating: 4.6,
+        overview: "Strategies to focus deeply and achieve peak productivity in a distracted world.",
+        image: "static/deep.jpg"
+        },
+        {
+        title: "Think and Grow Rich",
+        author: "Napoleon Hill",
+        genre: "Self-Help",
+        price: 340,
+        rating: 4.5,
+        overview: "Classic guide to achieving financial and personal success through mental focus.",
+        image: "static/think.jpg"
+        },
+        {
+        title: "The Subtle Art of Not Giving a F*ck",
+        author: "Mark Manson",
+        genre: "Self-Help",
+        price: 450,
+        rating: 4.3,
+        overview: "A counterintuitive approach to living a good life by embracing flaws.",
+        image: "https://m.media-amazon.com/images/I/71QKQ9mwV7L.jpg"
+        },
+        {
+        title: "Start With Why",
+        author: "Simon Sinek",
+        genre: "Business",
+        price: 490,
+        rating: 4.5,
+        overview: "Learn how great leaders inspire action by starting with 'Why'.",
+        image: "static/start.jpg"
+        },
+        {
+        title: "Becoming",
+        author: "Michelle Obama",
+        genre: "Biography",
+        price: 599,
+        rating: 4.9,
+        overview: "A deeply personal memoir by the former First Lady of the United States.",
+        image: "https://m.media-amazon.com/images/I/81h2gWPTYJL.jpg"
+        },
+        {
+        title: "Educated",
+        author: "Tara Westover",
+        genre: "Memoir",
+        price: 499,
+        rating: 4.7,
+        overview: "A woman who grew up in a strict and abusive household escapes to learn and thrive.",
+        image: "https://m.media-amazon.com/images/I/81WojUxbbFL.jpg"
+        },
+        {
+        title: "Sapiens",
+        author: "Yuval Noah Harari",
+        genre: "History",
+        price: 590,
+        rating: 4.8,
+        overview: "A brief history of humankind and how our species has evolved.",
+        image: "https://m.media-amazon.com/images/I/713jIoMO3UL.jpg"
+        },
+        {
+        title: "Dopamine Nation",
+        author: "Anna Lembke",
+        genre: "Science",
+        price: 420,
+        rating: 4.5,
+        overview: "Explores the science of addiction in a world of instant gratification.",
+        image: "static/dopamine.jpg"
+        },
+        {
+        title: "The Psychology of Money",
+        author: "Morgan Housel",
+        genre: "Finance",
+        price: 450,
+        rating: 4.7,
+        overview: "Timeless lessons on wealth, greed, and happiness.",
+        image: "https://m.media-amazon.com/images/I/71g2ednj0JL.jpg"
+        },
+        {
+        title: "1984",
+        author: "George Orwell",
+        genre: "Fiction",
+        price: 370,
+        rating: 4.6,
+        overview: "A dystopian novel about a totalitarian regime that uses surveillance to control citizens.",
+        image: "static/1984.jpg"
+        },
+        {
+        title: "To Kill a Mockingbird",
+        author: "Harper Lee",
+        genre: "Classic",
+        price: 410,
+        rating: 4.8,
+        overview: "A powerful story on racial injustice and childhood in the Deep South.",
+        image: "https://m.media-amazon.com/images/I/81gepf1eMqL.jpg"
+        },
+        {
+        title: "The Book Thief",
+        author: "Markus Zusak",
+        genre: "Historical Fiction",
+        price: 460,
+        rating: 4.7,
+        overview: "Set in Nazi Germany, it follows a girl who steals books and shares them.",
+        image: "static/thief.jpeg"
+        },
+        {
+        title: "The Silent Patient",
+        author: "Alex Michaelides",
+        genre: "Thriller",
+        price: 495,
+        rating: 4.5,
+        overview: "A woman shoots her husband and stops speaking — a psychotherapist tries to uncover why.",
+        image: "static/silent.jpg"
+        },
+
+      {
+        title: "The Power of Your Subconscious Mind",
+        author: "Joseph Murphy",
+        genre: "Self-Help",
+        price: 249,
+        rating: 4.3,
+        overview: "Harness the power of your subconscious to improve your life.",
+        image: "static/power.jpg"
+      }
+      // Add more books here if needed
+    ];
+
+    const container = document.getElementById("book-container");
+    const modal = document.getElementById("book-modal");
+
+    function renderBooks() {
+      books.forEach((book, index) => {
+        const card = document.createElement("div");
+        card.className = "book-card";
+        card.innerHTML = `
+          <img src="${book.image}" alt="${book.title}" class="book-image">
+          <div class="book-title">${book.title}</div>
+        `;
+        card.onclick = () => openModal(book);
+        container.appendChild(card);
+      });
+    }
+
+    function openModal(book) {
+      document.getElementById("modal-title").innerText = book.title;
+      document.getElementById("modal-author").innerText = book.author;
+      document.getElementById("modal-genre").innerText = book.genre;
+      document.getElementById("modal-price").innerText = book.price;
+      document.getElementById("modal-rating").innerText = book.rating;
+      document.getElementById("modal-overview").innerText = book.overview;
+      modal.classList.add("active");
+    }
+
+    function closeModal() {
+      modal.classList.remove("active");
+    }
+
+    renderBooks();
+  </script>
+</body>
+</html>
